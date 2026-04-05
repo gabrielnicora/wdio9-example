@@ -10,7 +10,7 @@ import CheckoutReviewPage from '../pageobjects/checkout-review.page'
 
 describe('Sauce Labs My Demo App - Full E2E Purchase Flow', () => {
 
-    it('should login, select a product, and verify integrity in the cart', async () => {
+    it('Cliente puede comprar y completar el checkout con exito', async () => {
         // --- PASO 1: LOGIN Y NAVEGACIÓN ---
         console.log('Iniciando flujo de Login...');
         await HomePage.openNavigationMenu();
@@ -20,14 +20,11 @@ describe('Sauce Labs My Demo App - Full E2E Purchase Flow', () => {
         await LoginPage.login('bob@example.com', '10203040');
 
         // --- PASO 2: SELECCIÓN DE PRODUCTO EN HOME ---
-        console.log('Seleccionando el primer producto del catálogo...');
         
         // Capturamos el nombre (ej: "Sauce Labs Backpack") y clickeamos la imagen
         const expectedProductName = await HomePage.selectFirstProduct();
-        console.log(`Producto capturado: ${expectedProductName}`);
 
         // --- PASO 3: DETALLE DEL PRODUCTO ---
-        console.log('Validando detalle y ajustando cantidad...');
         await ProductDetailPage.waitForPageLoad();
 
         // Validamos que el título en el detalle sea el mismo que en la Home
@@ -42,9 +39,7 @@ describe('Sauce Labs My Demo App - Full E2E Purchase Flow', () => {
         // Scroll al botón "Add to Cart" y click
         await ProductDetailPage.addProductToCart();
 
-        // --- PASO 4: CARRITO Y VALIDACIÓN FINAL ---
-        console.log('Navegando al carrito para validación final...');
-        
+        // --- PASO 4: CARRITO Y VALIDACIÓN FINAL ---        
         // Click en el icono del carrito (Accessibility ID del header)
         const btnCartHeader = await $('~Displays number of items in your cart');
         await btnCartHeader.click();
@@ -60,7 +55,6 @@ describe('Sauce Labs My Demo App - Full E2E Purchase Flow', () => {
         await expect(CartPage.txtTotalItems).toHaveText('3 Items');
 
         // --- PASO 5: CHECKOUT ---
-        console.log('Procediendo al Checkout...');
         await CartPage.proceedToCheckout();
 
         await CheckoutPage.fillShippingForm({
