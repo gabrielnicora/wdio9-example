@@ -40,3 +40,15 @@
 | Review / Integrity    | Verificación de que el producto, cantidad y dirección en el resumen coincidan con lo seleccionado. | Functional | High: Último control de calidad antes de procesar el pago.            |
 | Complete / Success    | Visualización de "Checkout Complete" y vaciado automático del carrito tras la compra.              | Functional | High: Confirmación final de éxito de la operación comercial.          |
 | Complete / Error      | Visualización de mensaje de error amigable en caso de falla técnica en el procesamiento.           | Negative   | Medium: Crucial para la atención al cliente y soporte técnico.        |
+
+🔐 Login
+| Screen / Feature              | Scenario description                                                                                   | Type       | Priority                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------ | ---------- | ----------------------------------------------------------- |
+| Login / Valid Credentials     | Cliente puede loguearse completando manualmente usuario y contraseña con credenciales válidas.         | Functional | High: Es el punto de entrada principal a la aplicación.     |
+| Login / Invalid Password      | Cliente recibe mensaje de credenciales inválidas si ingresa una contraseña incorrecta.                 | Negative   | High: Asegura feedback claro ante errores de autenticación. |
+| Login / Invalid User          | Cliente recibe mensaje de usuario inválido si ingresa un email incorrecto o inexistente.               | Negative   | High: Valida la correcta identificación del usuario.        |
+| Login / Empty Fields          | Cliente intenta loguearse sin completar usuario y/o contraseña y recibe validaciones correspondientes. | Negative   | High: Previene envíos de formularios incompletos.           |
+| Login / Password Masking      | El campo contraseña oculta los caracteres ingresados.                                                  | UI/UX      | Medium: Protege la privacidad del usuario.                  |
+| Login / Session Persistence   | Cliente logueado mantiene la sesión activa al cerrar y reabrir la app (si aplica).                     | Functional | Medium: Mejora la experiencia de usuario recurrente.        |
+| Login / Logout Redirect       | Luego de hacer logout, el usuario es redirigido a la pantalla de login sin sesión activa.              | Functional | High: Garantiza la correcta finalización de sesión.         |
+| Login / Error Message Clarity | Los mensajes de error son claros, visibles y no ambiguos.                                              | UI/UX      | Medium: Mejora la experiencia ante fallos de autenticación. |
