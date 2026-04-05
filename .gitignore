@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+# Reportes y logs
+allure-results/
+allure-report/
+logs/
+*.log
+
+# Archivos del sistema Mac
+.DS_Store
+
+# Variables de entorno o configs locales
+.env
+.idea/
+.vscode/
