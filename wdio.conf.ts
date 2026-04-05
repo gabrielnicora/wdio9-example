@@ -1,3 +1,5 @@
+import { execSync, exec } from 'child_process';
+
 export const config: WebdriverIO.Config = {
     //
     // ====================
@@ -110,7 +112,16 @@ export const config: WebdriverIO.Config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['appium'],
+    services: [
+        ['appium', {
+            command: 'appium',
+            args: {
+                address: '127.0.0.1',
+                port: 4723,
+                relaxedSecurity: true // Útil para ciertos comandos de shell
+            }
+        }]
+    ],
 
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -140,6 +151,55 @@ export const config: WebdriverIO.Config = {
     mochaOpts: {
         ui: 'bdd',
         timeout: 60000
+    },
+
+    onPrepare: async function (_config, _capabilities) {
+        console.log('--- Validando entorno de ejecución ---');
+
+        try {
+            // 1. Verificar si ya hay algún dispositivo/emulador activo
+            const activeDevices = execSync('adb devices').toString();
+            if (activeDevices.includes('\tdevice')) {
+                console.log('✅ Dispositivo detectado. Continuando con los tests...');
+                return;
+            }
+
+            // 2. Si no hay activos, buscar emuladores instalados (AVDs)
+            const avdListRaw = execSync(`${process.env.ANDROID_HOME}/emulator/emulator -list-avds`).toString();
+            const avds = avdListRaw.trim().split('\n').filter(name => name.length > 0);
+
+            if (avds.length === 0) {
+                // ERROR CRÍTICO: No hay emuladores para lanzar
+                console.error('\n❌ ERROR: No se detectaron dispositivos activos ni emuladores instalados (AVDs).');
+                console.error('Por favor, crea un emulador en Android Studio o conecta un dispositivo físico.\n');
+                process.exit(1); // Detiene la ejecución de WDIO inmediatamente
+            }
+
+            // 3. Seleccionar el primer emulador de la lista
+            const emulatorToLaunch = avds[0];
+            console.log(`🚀 No hay dispositivos activos. Lanzando emulador detectado: "${emulatorToLaunch}"...`);
+
+            exec(`${process.env.ANDROID_HOME}/emulator/emulator -avd ${emulatorToLaunch} -no-snapshot-load`);
+
+            // 4. Esperar a que el sistema Android termine de bootear
+            let isBooted = false;
+            while (!isBooted) {
+                try {
+                    const stdout = execSync('adb shell getprop init.svc.bootanim').toString();
+                    if (stdout.includes('stopped')) {
+                        isBooted = true;
+                    }
+                } catch (e) {
+                    // Ignorar errores temporales mientras adb conecta
+                }
+                if (!isBooted) await new Promise(r => setTimeout(r, 2000));
+            }
+            console.log('✅ Emulador iniciado y listo.');
+
+        } catch (error) {
+            console.error('❌ Error fatal:', (error as Error).message);
+            process.exit(1);
+        }
     },
 
     //
